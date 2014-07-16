@@ -37,13 +37,9 @@ enum BlockLayoutType
 // Base class for all variables defined in shaders, including Varyings, Uniforms, etc
 struct ShaderVariable
 {
-    ShaderVariable(GLenum typeIn, GLenum precisionIn, const char *nameIn, unsigned int arraySizeIn)
-        : type(typeIn),
-          precision(precisionIn),
-          name(nameIn),
-          arraySize(arraySizeIn),
-          staticUse(false)
-    {}
+    ShaderVariable(GLenum typeIn, GLenum precisionIn, const char *nameIn, unsigned int arraySizeIn);
+    ShaderVariable(const ShaderVariable& other);
+    void operator=(const ShaderVariable& other);
 
     bool isArray() const { return arraySize > 0; }
     unsigned int elementCount() const { return std::max(1u, arraySize); }
@@ -54,23 +50,20 @@ struct ShaderVariable
     std::string mappedName;
     unsigned int arraySize;
     bool staticUse;
+
+private:
+    // To prevent large automatic inline code generation.
+    bool operator==(const ShaderVariable& other) const;
 };
 
 // Uniform registers (and element indices) are assigned when outputting shader code
 struct Uniform : public ShaderVariable
 {
-    Uniform()
-        : ShaderVariable(0, 0, "", 0),
-          registerIndex(-1),
-          elementIndex(-1)
-    {}
-
+    Uniform();
     Uniform(GLenum typeIn, GLenum precisionIn, const char *nameIn, unsigned int arraySizeIn,
-            unsigned int registerIndexIn, unsigned int elementIndexIn)
-        : ShaderVariable(typeIn, precisionIn, nameIn, arraySizeIn),
-          registerIndex(registerIndexIn),
-          elementIndex(elementIndexIn)
-    {}
+            unsigned int registerIndexIn, unsigned int elementIndexIn);
+    Uniform(const Uniform& other);
+    void operator=(const Uniform& other);
 
     bool isStruct() const { return !fields.empty(); }
 
@@ -79,57 +72,66 @@ struct Uniform : public ShaderVariable
     // HLSL-specific members
     unsigned int registerIndex;
     unsigned int elementIndex; // Offset within a register, for struct members
+
+private:
+    // To prevent large automatic inline code generation.
+    bool operator==(const Uniform& other) const;
 };
 
 struct Attribute : public ShaderVariable
 {
-    Attribute()
-        : ShaderVariable(0, 0, "", 0),
-          location(-1)
-    {}
-
-    Attribute(GLenum typeIn, GLenum precisionIn, const char *nameIn, unsigned int arraySizeIn, int locationIn)
-      : ShaderVariable(typeIn, precisionIn, nameIn, arraySizeIn),
-        location(locationIn)
-    {}
+    Attribute();
+    Attribute(GLenum typeIn, GLenum precisionIn, const char *nameIn, unsigned int arraySizeIn, int locationIn);
+    Attribute(const Attribute& other);
+    void operator=(const Attribute& other);
 
     int location;
+
+private:
+    // To prevent large automatic inline code generation.
+    bool operator==(const Attribute& other) const;
 };
 
 struct InterfaceBlockField : public ShaderVariable
 {
-    InterfaceBlockField(GLenum typeIn, GLenum precisionIn, const char *nameIn, unsigned int arraySizeIn, bool isRowMajorMatrix)
-        : ShaderVariable(typeIn, precisionIn, nameIn, arraySizeIn),
-          isRowMajorMatrix(isRowMajorMatrix)
-    {}
+    InterfaceBlockField(GLenum typeIn, GLenum precisionIn, const char *nameIn, unsigned int arraySizeIn, bool isRowMajorMatrix);
+    InterfaceBlockField(const InterfaceBlockField& other);
+    void operator=(const InterfaceBlockField& other);
 
     bool isStruct() const { return !fields.empty(); }
 
     bool isRowMajorMatrix;
     std::vector<InterfaceBlockField> fields;
+
+private:
+    // To prevent large automatic inline code generation.
+    bool operator==(const InterfaceBlockField& other) const;
 };
 
 struct Varying : public ShaderVariable
 {
-    Varying()
-        : ShaderVariable(0, 0, "", 0),
-          interpolation(INTERPOLATION_SMOOTH)
-    {}
-
-    Varying(GLenum typeIn, GLenum precisionIn, const char *nameIn, unsigned int arraySizeIn, InterpolationType interpolationIn)
-        : ShaderVariable(typeIn, precisionIn, nameIn, arraySizeIn),
-          interpolation(interpolationIn)
-    {}
+    Varying();
+    Varying(GLenum typeIn, GLenum precisionIn, const char *nameIn, unsigned int arraySizeIn, InterpolationType interpolationIn);
+    Varying(const Varying& other);
+    void operator=(const Varying& other);
 
     bool isStruct() const { return !fields.empty(); }
 
     InterpolationType interpolation;
     std::vector<Varying> fields;
     std::string structName;
+
+private:
+    // To prevent large automatic inline code generation.
+    bool operator==(const Varying& other) const;
 };
 
 struct BlockMemberInfo
 {
+    // Borderline too large for inline. If someone adds another field,
+    // or makes one of the existing fields more complicated, outline
+    // this and add explicit copy and assignment
+    // constructors/operators.
     BlockMemberInfo(int offset, int arrayStride, int matrixStride, bool isRowMajorMatrix)
         : offset(offset),
           arrayStride(arrayStride),
@@ -152,14 +154,9 @@ typedef std::vector<BlockMemberInfo> BlockMemberInfoArray;
 
 struct InterfaceBlock
 {
-    InterfaceBlock(const char *name, unsigned int arraySize, unsigned int registerIndex)
-        : name(name),
-          arraySize(arraySize),
-          dataSize(0),
-          layout(BLOCKLAYOUT_SHARED),
-          isRowMajorLayout(false),
-          registerIndex(registerIndex)
-    {}
+    InterfaceBlock(const char *name, unsigned int arraySize, unsigned int registerIndex);
+    InterfaceBlock(const InterfaceBlock& other);
+    void operator=(const InterfaceBlock& other);
 
     std::string name;
     unsigned int arraySize;
@@ -171,6 +168,9 @@ struct InterfaceBlock
 
     // HLSL-specific members
     unsigned int registerIndex;
+private:
+    // To prevent large automatic inline code generation.
+    bool operator==(const InterfaceBlock& other) const;
 };
 
 }
