@@ -35,14 +35,14 @@ enum BlockLayoutType
 };
 
 // Base class for all variables defined in shaders, including Varyings, Uniforms, etc
+// Note: we must override the copy constructor and assignment operator so we can
+// work around excessive GCC binary bloating:
+// See https://code.google.com/p/angleproject/issues/detail?id=697
 struct ShaderVariable
 {
-    ShaderVariable()
-        : type(0),
-          precision(0),
-          arraySize(0),
-          staticUse(false)
-    {}
+    ShaderVariable();
+    ShaderVariable(const ShaderVariable &other);
+    ShaderVariable &operator=(const ShaderVariable &other);
 
     ShaderVariable(GLenum typeIn, GLenum precisionIn, const char *nameIn, unsigned int arraySizeIn)
         : type(typeIn),
@@ -66,18 +66,9 @@ struct ShaderVariable
 // Uniform registers (and element indices) are assigned when outputting shader code
 struct Uniform : public ShaderVariable
 {
-    Uniform()
-        : registerIndex(-1),
-          elementIndex(-1)
-    {}
-
-    Uniform(GLenum typeIn, GLenum precisionIn, const char *nameIn, unsigned int arraySizeIn,
-            unsigned int registerIndexIn, unsigned int elementIndexIn)
-        : ShaderVariable(typeIn, precisionIn, nameIn, arraySizeIn),
-          registerIndex(registerIndexIn),
-          elementIndex(elementIndexIn)
-    {}
-
+    Uniform();
+    Uniform(const Uniform &other);
+    Uniform &operator=(const Uniform &other);
     bool isStruct() const { return !fields.empty(); }
 
     std::vector<Uniform> fields;
@@ -89,9 +80,9 @@ struct Uniform : public ShaderVariable
 
 struct Attribute : public ShaderVariable
 {
-    Attribute()
-        : location(-1)
-    {}
+    Attribute();
+    Attribute(const Attribute &other);
+    Attribute &operator=(const Attribute &other);
 
     Attribute(GLenum typeIn, GLenum precisionIn, const char *nameIn, unsigned int arraySizeIn, int locationIn)
       : ShaderVariable(typeIn, precisionIn, nameIn, arraySizeIn),
@@ -103,9 +94,9 @@ struct Attribute : public ShaderVariable
 
 struct InterfaceBlockField : public ShaderVariable
 {
-    InterfaceBlockField()
-        : isRowMajorMatrix(false)
-    {}
+    InterfaceBlockField();
+    InterfaceBlockField(const InterfaceBlockField &other);
+    InterfaceBlockField &operator=(const InterfaceBlockField &other);
 
     InterfaceBlockField(GLenum typeIn, GLenum precisionIn, const char *nameIn, unsigned int arraySizeIn, bool isRowMajorMatrix)
         : ShaderVariable(typeIn, precisionIn, nameIn, arraySizeIn),
@@ -120,9 +111,9 @@ struct InterfaceBlockField : public ShaderVariable
 
 struct Varying : public ShaderVariable
 {
-    Varying()
-        : interpolation(INTERPOLATION_SMOOTH)
-    {}
+    Varying();
+    Varying(const Varying &other);
+    Varying &operator=(const Varying &other);
 
     Varying(GLenum typeIn, GLenum precisionIn, const char *nameIn, unsigned int arraySizeIn, InterpolationType interpolationIn)
         : ShaderVariable(typeIn, precisionIn, nameIn, arraySizeIn),
@@ -160,12 +151,9 @@ typedef std::vector<BlockMemberInfo> BlockMemberInfoArray;
 
 struct InterfaceBlock
 {
-    InterfaceBlock()
-        : arraySize(0),
-          layout(BLOCKLAYOUT_PACKED),
-          isRowMajorLayout(false),
-          staticUse(false)
-    {}
+    InterfaceBlock();
+    InterfaceBlock(const InterfaceBlock &other);
+    InterfaceBlock &operator=(const InterfaceBlock &other);
 
     InterfaceBlock(const char *name, unsigned int arraySize)
         : name(name),
