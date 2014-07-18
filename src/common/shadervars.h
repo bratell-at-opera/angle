@@ -42,15 +42,10 @@ struct ShaderVariable
 {
     ShaderVariable();
     ShaderVariable(const ShaderVariable &other);
-    ShaderVariable &operator=(const ShaderVariable &other);
+    void operator=(const ShaderVariable &other);
+    ~ShaderVariable();
 
-    ShaderVariable(GLenum typeIn, GLenum precisionIn, const char *nameIn, unsigned int arraySizeIn)
-        : type(typeIn),
-          precision(precisionIn),
-          name(nameIn),
-          arraySize(arraySizeIn),
-          staticUse(false)
-    {}
+  ShaderVariable(GLenum typeIn, GLenum precisionIn, const char *nameIn, unsigned int arraySizeIn);
 
     bool isArray() const { return arraySize > 0; }
     unsigned int elementCount() const { return std::max(1u, arraySize); }
@@ -68,7 +63,8 @@ struct Uniform : public ShaderVariable
 {
     Uniform();
     Uniform(const Uniform &other);
-    Uniform &operator=(const Uniform &other);
+    ~Uniform();
+    void operator=(const Uniform &other);
     bool isStruct() const { return !fields.empty(); }
 
     std::vector<Uniform> fields;
@@ -82,12 +78,10 @@ struct Attribute : public ShaderVariable
 {
     Attribute();
     Attribute(const Attribute &other);
-    Attribute &operator=(const Attribute &other);
+    ~Attribute();
+    void operator=(const Attribute &other);
 
-    Attribute(GLenum typeIn, GLenum precisionIn, const char *nameIn, unsigned int arraySizeIn, int locationIn)
-      : ShaderVariable(typeIn, precisionIn, nameIn, arraySizeIn),
-        location(locationIn)
-    {}
+    Attribute(GLenum typeIn, GLenum precisionIn, const char *nameIn, unsigned int arraySizeIn, int locationIn);
 
     int location;
 };
@@ -96,12 +90,10 @@ struct InterfaceBlockField : public ShaderVariable
 {
     InterfaceBlockField();
     InterfaceBlockField(const InterfaceBlockField &other);
-    InterfaceBlockField &operator=(const InterfaceBlockField &other);
+    ~InterfaceBlockField();
+    void operator=(const InterfaceBlockField &other);
 
-    InterfaceBlockField(GLenum typeIn, GLenum precisionIn, const char *nameIn, unsigned int arraySizeIn, bool isRowMajorMatrix)
-        : ShaderVariable(typeIn, precisionIn, nameIn, arraySizeIn),
-          isRowMajorMatrix(isRowMajorMatrix)
-    {}
+    InterfaceBlockField(GLenum typeIn, GLenum precisionIn, const char *nameIn, unsigned int arraySizeIn, bool isRowMajorMatrix);
 
     bool isStruct() const { return !fields.empty(); }
 
@@ -112,13 +104,11 @@ struct InterfaceBlockField : public ShaderVariable
 struct Varying : public ShaderVariable
 {
     Varying();
+    ~Varying();
     Varying(const Varying &other);
-    Varying &operator=(const Varying &other);
+    void operator=(const Varying &other);
 
-    Varying(GLenum typeIn, GLenum precisionIn, const char *nameIn, unsigned int arraySizeIn, InterpolationType interpolationIn)
-        : ShaderVariable(typeIn, precisionIn, nameIn, arraySizeIn),
-          interpolation(interpolationIn)
-    {}
+    Varying(GLenum typeIn, GLenum precisionIn, const char *nameIn, unsigned int arraySizeIn, InterpolationType interpolationIn);
 
     bool isStruct() const { return !fields.empty(); }
 
@@ -152,16 +142,11 @@ typedef std::vector<BlockMemberInfo> BlockMemberInfoArray;
 struct InterfaceBlock
 {
     InterfaceBlock();
+  ~InterfaceBlock();
     InterfaceBlock(const InterfaceBlock &other);
-    InterfaceBlock &operator=(const InterfaceBlock &other);
+    void operator=(const InterfaceBlock &other);
 
-    InterfaceBlock(const char *name, unsigned int arraySize)
-        : name(name),
-          arraySize(arraySize),
-          layout(BLOCKLAYOUT_SHARED),
-          isRowMajorLayout(false),
-          staticUse(false)
-    {}
+  InterfaceBlock(const char *name, unsigned int arraySize);
 
     std::string name;
     std::string mappedName;

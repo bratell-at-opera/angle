@@ -28,7 +28,7 @@ ShaderVariable::ShaderVariable(const ShaderVariable &other)
       staticUse(other.staticUse)
 {}
 
-ShaderVariable &ShaderVariable::operator=(const ShaderVariable &other)
+void ShaderVariable::operator=(const ShaderVariable &other)
 {
     type = other.type;
     precision = other.precision;
@@ -36,8 +36,19 @@ ShaderVariable &ShaderVariable::operator=(const ShaderVariable &other)
     mappedName = other.mappedName;
     arraySize = other.arraySize;
     staticUse = other.staticUse;
-    return *this;
 }
+
+  ShaderVariable::ShaderVariable(GLenum typeIn, GLenum precisionIn, const char *nameIn, unsigned int arraySizeIn)
+        : type(typeIn),
+          precision(precisionIn),
+          name(nameIn),
+          arraySize(arraySizeIn),
+          staticUse(false)
+    {}
+
+  ShaderVariable::~ShaderVariable()
+  {}
+
 
 Uniform::Uniform()
 {}
@@ -47,12 +58,14 @@ Uniform::Uniform(const Uniform &other)
       fields(other.fields)
 {}
 
-Uniform &Uniform::operator=(const Uniform &other)
+void Uniform::operator=(const Uniform &other)
 {
     ShaderVariable::operator=(other);
     fields = other.fields;
-    return *this;
 }
+
+  Uniform::~Uniform()
+  {}
 
 Attribute::Attribute()
     : location(-1)
@@ -63,12 +76,18 @@ Attribute::Attribute(const Attribute &other)
       location(other.location)
 {}
 
-Attribute &Attribute::operator=(const Attribute &other)
+void Attribute::operator=(const Attribute &other)
 {
     ShaderVariable::operator=(other);
     location = other.location;
-    return *this;
 }
+  Attribute::Attribute(GLenum typeIn, GLenum precisionIn, const char *nameIn, unsigned int arraySizeIn, int locationIn)
+      : ShaderVariable(typeIn, precisionIn, nameIn, arraySizeIn),
+        location(locationIn)
+    {}
+
+  Attribute::~Attribute()
+  {}
 
 InterfaceBlockField::InterfaceBlockField()
     : isRowMajorMatrix(false)
@@ -80,13 +99,22 @@ InterfaceBlockField::InterfaceBlockField(const InterfaceBlockField &other)
       fields(other.fields)
 {}
 
-InterfaceBlockField &InterfaceBlockField::operator=(const InterfaceBlockField &other)
+  InterfaceBlockField::~InterfaceBlockField()
+  {}
+
+void InterfaceBlockField::operator=(const InterfaceBlockField &other)
 {
     ShaderVariable::operator=(other);
     isRowMajorMatrix = other.isRowMajorMatrix;
     fields = other.fields;
-    return *this;
 }
+
+  InterfaceBlockField::InterfaceBlockField(GLenum typeIn, GLenum precisionIn, const char *nameIn, unsigned int arraySizeIn, bool isRowMajorMatrix)
+        : ShaderVariable(typeIn, precisionIn, nameIn, arraySizeIn),
+          isRowMajorMatrix(isRowMajorMatrix)
+    {}
+
+  
 
 Varying::Varying()
     : interpolation(INTERPOLATION_SMOOTH)
@@ -98,16 +126,21 @@ Varying::Varying(const Varying &other)
       fields(other.fields),
       structName(other.structName)
 {}
+Varying::~Varying()
+{}
 
-Varying &Varying::operator=(const Varying &other)
+void Varying::operator=(const Varying &other)
 {
     ShaderVariable::operator=(other);
     interpolation = other.interpolation;
     fields = other.fields;
     structName = other.structName;
-    return *this;
 }
 
+  Varying::Varying(GLenum typeIn, GLenum precisionIn, const char *nameIn, unsigned int arraySizeIn, InterpolationType interpolationIn)
+        : ShaderVariable(typeIn, precisionIn, nameIn, arraySizeIn),
+          interpolation(interpolationIn)
+    {}
 InterfaceBlock::InterfaceBlock()
     : arraySize(0),
       layout(BLOCKLAYOUT_PACKED),
@@ -124,8 +157,10 @@ InterfaceBlock::InterfaceBlock(const InterfaceBlock &other)
       staticUse(other.staticUse),
       fields(other.fields)
 {}
+InterfaceBlock::~InterfaceBlock()
+{}
 
-InterfaceBlock &InterfaceBlock::operator=(const InterfaceBlock &other)
+void InterfaceBlock::operator=(const InterfaceBlock &other)
 {
     name = other.name;
     mappedName = other.mappedName;
@@ -134,7 +169,14 @@ InterfaceBlock &InterfaceBlock::operator=(const InterfaceBlock &other)
     isRowMajorLayout = other.isRowMajorLayout;
     staticUse = other.staticUse;
     fields = other.fields;
-    return *this;
 }
+  InterfaceBlock::InterfaceBlock(const char *name, unsigned int arraySize)
+        : name(name),
+          arraySize(arraySize),
+          layout(BLOCKLAYOUT_SHARED),
+          isRowMajorLayout(false),
+          staticUse(false)
+    {}
+
 
 }
