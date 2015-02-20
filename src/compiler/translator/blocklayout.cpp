@@ -108,6 +108,7 @@ void Std140BlockEncoder::advanceOffset(GLenum type, unsigned int arraySize, bool
     }
 }
 
+#ifdef ANGLE_ENABLE_HLSL
 HLSLBlockEncoder::HLSLBlockEncoder(HLSLBlockEncoderStrategy strategy)
     : mEncoderStrategy(strategy)
 {
@@ -248,5 +249,5 @@ unsigned int HLSLVariableRegisterCount(const Uniform &variable, ShShaderOutput o
     const size_t registerBytes = (encoder.BytesPerComponent * encoder.ComponentsPerRegister);
     return static_cast<unsigned int>(rx::roundUp<size_t>(encoder.getBlockSize(), registerBytes) / registerBytes);
 }
-
+#endif // ANGLE_ENABLE_HLSL
 }

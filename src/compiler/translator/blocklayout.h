@@ -86,6 +86,7 @@ class COMPILER_EXPORT Std140BlockEncoder : public BlockLayoutEncoder
     virtual void advanceOffset(GLenum type, unsigned int arraySize, bool isRowMajorMatrix, int arrayStride, int matrixStride);
 };
 
+#if ANGLE_ENABLE_HLSL
 // Block layout packed according to the D3D9 or default D3D10+ register packing rules
 // See http://msdn.microsoft.com/en-us/library/windows/desktop/bb509632(v=vs.85).aspx
 // The strategy should be ENCODE_LOOSE for D3D9 constant blocks, and ENCODE_PACKED
@@ -122,6 +123,7 @@ class COMPILER_EXPORT HLSLBlockEncoder : public BlockLayoutEncoder
 COMPILER_EXPORT unsigned int HLSLVariableRegisterCount(const Varying &variable);
 COMPILER_EXPORT unsigned int HLSLVariableRegisterCount(const Uniform &variable, ShShaderOutput outputType);
 
+#endif // ANGLE_ENABLE_HLSL
 }
 
 #endif // COMMON_BLOCKLAYOUT_H_

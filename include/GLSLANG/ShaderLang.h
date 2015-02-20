@@ -83,9 +83,11 @@ typedef enum {
 typedef enum {
   SH_ESSL_OUTPUT   = 0x8B45,
   SH_GLSL_OUTPUT   = 0x8B46,
+#ifdef ANGLE_ENABLE_HLSL
   SH_HLSL_OUTPUT   = 0x8B47,
   SH_HLSL9_OUTPUT  = 0x8B47,
   SH_HLSL11_OUTPUT = 0x8B48
+#endif // ANGLE_ENABLE_HLSL
 } ShShaderOutput;
 
 // Compile options.
