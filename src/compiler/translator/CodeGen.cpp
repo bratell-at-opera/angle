@@ -6,7 +6,9 @@
 
 #include "compiler/translator/TranslatorESSL.h"
 #include "compiler/translator/TranslatorGLSL.h"
+#ifdef ANGLE_ENABLE_HLSL
 #include "compiler/translator/TranslatorHLSL.h"
+#endif // ANGLE_ENABLE_HLSL
 
 //
 // This function must be provided to create the actual
@@ -21,9 +23,11 @@ TCompiler* ConstructCompiler(
         return new TranslatorESSL(type, spec);
     case SH_GLSL_OUTPUT:
         return new TranslatorGLSL(type, spec);
+#ifdef ANGLE_ENABLE_HLSL
     case SH_HLSL9_OUTPUT:
     case SH_HLSL11_OUTPUT:
         return new TranslatorHLSL(type, spec, output);
+#endif // ANGLE_ENABLE_HLSL
     default:
         return NULL;
     }

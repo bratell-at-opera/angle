@@ -14,7 +14,9 @@
 #include "compiler/translator/Compiler.h"
 #include "compiler/translator/InitializeDll.h"
 #include "compiler/translator/length_limits.h"
+#ifdef ANGLE_ENABLE_HLSL
 #include "compiler/translator/TranslatorHLSL.h"
+#endif // ANGLE_ENABLE_HLSL
 #include "compiler/translator/VariablePacker.h"
 #include "angle_gl.h"
 
@@ -92,6 +94,7 @@ TCompiler *GetCompilerFromHandle(ShHandle handle)
     return base->getAsCompiler();
 }
 
+#ifdef ANGLE_ENABLE_HLSL
 TranslatorHLSL *GetTranslatorHLSLFromHandle(ShHandle handle)
 {
     if (!handle)
@@ -99,6 +102,7 @@ TranslatorHLSL *GetTranslatorHLSLFromHandle(ShHandle handle)
     TShHandleBase *base = static_cast<TShHandleBase *>(handle);
     return base->getAsTranslatorHLSL();
 }
+#endif // ANGLE_ENABLE_HLSL
 
 }  // namespace anonymous
 
@@ -323,6 +327,7 @@ bool ShCheckVariablesWithinPackingLimits(
     return packer.CheckVariablesWithinPackingLimits(maxVectors, variables);
 }
 
+#ifdef ANGLE_ENABLE_HLSL
 bool ShGetInterfaceBlockRegister(const ShHandle handle,
                                  const std::string &interfaceBlockName,
                                  unsigned int *indexOut)
@@ -357,3 +362,4 @@ bool ShGetUniformRegister(const ShHandle handle,
     *indexOut = translator->getUniformRegister(uniformName);
     return true;
 }
+#endif // ANGLE_ENABLE_HLSL

@@ -7,6 +7,7 @@
 #ifndef COMPILER_TRANSLATOR_OUTPUTHLSL_H_
 #define COMPILER_TRANSLATOR_OUTPUTHLSL_H_
 
+#ifdef ANGLE_ENABLE_HLSL
 #include <list>
 #include <set>
 #include <map>
@@ -187,5 +188,6 @@ class OutputHLSL : public TIntermTraverser
 };
 
 }
+#endif   // ANGLE_ENABLE_HLSL
 
 #endif   // COMPILER_TRANSLATOR_OUTPUTHLSL_H_

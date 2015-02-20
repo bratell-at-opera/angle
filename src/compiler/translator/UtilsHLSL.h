@@ -10,6 +10,7 @@
 #ifndef COMPILER_TRANSLATOR_UTILSHLSL_H_
 #define COMPILER_TRANSLATOR_UTILSHLSL_H_
 
+#ifdef ANGLE_ENABLE_HLSL
 #include <vector>
 #include "compiler/translator/Types.h"
 
@@ -33,5 +34,6 @@ TString InterpolationString(TQualifier qualifier);
 TString QualifierString(TQualifier qualifier);
 
 }
+#endif // ANGLE_ENABLE_HLSL
 
 #endif // COMPILER_TRANSLATOR_UTILSHLSL_H_

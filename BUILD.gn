@@ -91,6 +91,10 @@ static_library("angle_common") {
 static_library("translator_lib") {
   sources = rebase_path(compiler_gypi.angle_translator_lib_sources, ".", "src")
 
+  if (angle_enable_d3d9 || angle_enable_d3d11) {
+    sources += rebase_path(compiler_gypi.angle_translator_lib_hlsl_sources, ".", "src")
+    defines += [ ""ANGLE_ENABLE_HLSL" ]
+  }
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
     ":internal_config",

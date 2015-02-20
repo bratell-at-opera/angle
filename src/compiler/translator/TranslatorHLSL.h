@@ -7,6 +7,7 @@
 #ifndef COMPILER_TRANSLATOR_TRANSLATORHLSL_H_
 #define COMPILER_TRANSLATOR_TRANSLATORHLSL_H_
 
+#ifdef ANGLE_ENABLE_HLSL
 #include "compiler/translator/Compiler.h"
 
 class TranslatorHLSL : public TCompiler
@@ -27,5 +28,6 @@ class TranslatorHLSL : public TCompiler
     std::map<std::string, unsigned int> mInterfaceBlockRegisterMap;
     std::map<std::string, unsigned int> mUniformRegisterMap;
 };
+#endif // ANGLE_ENABLE_HLSL
 
 #endif  // COMPILER_TRANSLATOR_TRANSLATORHLSL_H_

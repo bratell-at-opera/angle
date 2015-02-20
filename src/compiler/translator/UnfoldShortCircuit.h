@@ -9,6 +9,7 @@
 #ifndef COMPILER_TRANSLATOR_UNFOLDSHORTCIRCUIT_H_
 #define COMPILER_TRANSLATOR_UNFOLDSHORTCIRCUIT_H_
 
+#ifdef ANGLE_ENABLE_HLSL
 #include "compiler/translator/IntermNode.h"
 #include "compiler/translator/ParseContext.h"
 
@@ -34,5 +35,5 @@ class UnfoldShortCircuit : public TIntermTraverser
     int mTemporaryIndex;
 };
 }
-
+#endif // ANGLE_ENABLE_HLSL
 #endif   // COMPILER_TRANSLATOR_UNFOLDSHORTCIRCUIT_H_
