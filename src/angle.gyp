@@ -58,6 +58,16 @@
                 {
                     'msvs_enable_winphone' : '1',
                 }],
+                ['angle_enable_d3d9==1 or angle_enable_d3d11==1',
+                {
+				    'direct_dependent_settings':
+					{
+						'defines':
+						[
+							'ANGLE_ENABLE_HLSL',
+						],
+					}
+                }],
             ],
         },
 

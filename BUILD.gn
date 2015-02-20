@@ -30,6 +30,23 @@ config("internal_config") {
   ]
 }
 
+angle_enable_d3d9 = false
+angle_enable_d3d11 = false
+angle_enable_gl = false
+
+if (is_win) {
+  angle_enable_d3d9 = true
+  angle_enable_d3d11 = true
+  angle_enable_gl = true
+
+  import("//build/config/win/visual_studio_version.gni")
+  copy("copy_compiler_dll") {
+    sources = [ "$windows_sdk_path/Redist/D3D/$cpu_arch/d3dcompiler_47.dll" ]
+    outputs = [ "$root_build_dir/d3dcompiler_47.dll" ]
+  }
+
+}  # is_win
+
 component("translator") {
   sources = [
     "src/compiler/translator/ShaderLang.cpp",
@@ -38,6 +55,10 @@ component("translator") {
 
   defines = [ "ANGLE_TRANSLATOR_IMPLEMENTATION" ]
 
+  if (angle_enable_d3d9 || angle_enable_d3d11) {
+    sources += rebase_path(compiler_gypi.angle_translator_lib_hlsl_sources, ".", "src")
+    defines += [ ""ANGLE_ENABLE_HLSL" ]
+  }
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
     ":internal_config",
@@ -149,23 +170,6 @@ action("commit_id") {
 
   public_configs = [ ":commit_id_config" ]
 }
-
-angle_enable_d3d9 = false
-angle_enable_d3d11 = false
-angle_enable_gl = false
-
-if (is_win) {
-  angle_enable_d3d9 = true
-  angle_enable_d3d11 = true
-  angle_enable_gl = true
-
-  import("//build/config/win/visual_studio_version.gni")
-  copy("copy_compiler_dll") {
-    sources = [ "$windows_sdk_path/Redist/D3D/$cpu_arch/d3dcompiler_47.dll" ]
-    outputs = [ "$root_build_dir/d3dcompiler_47.dll" ]
-  }
-
-}  # is_win
 
 config("libANGLE_config") {
   cflags = []

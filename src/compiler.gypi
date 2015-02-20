@@ -253,10 +253,6 @@
                     [
                         '<@(angle_translator_lib_hlsl_sources)',
                     ],
-                    'defines':
-                    [
-                        'ANGLE_ENABLE_HLSL',
-                    ],
                 }],
             ],
         },
@@ -296,7 +292,7 @@
         {
             'target_name': 'translator_static',
             'type': 'static_library',
-            'dependencies': [ 'translator_lib' ],
+            'dependencies': [ 'translator_lib', 'angle_common' ],
             'includes': [ '../build/common_defines.gypi', ],
             'include_dirs':
             [
