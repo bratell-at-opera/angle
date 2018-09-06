@@ -7,13 +7,14 @@
 # https://github.com/KhronosGroup/Vulkan-Headers
 
 import("../../gni/angle.gni")
+import("//build/config/jumbo.gni")
 
 config("vulkan_headers_config") {
   include_dirs = [ "src/include" ]
 }
 
 # Vulkan headers only, no compiled sources.
-source_set("vulkan_headers") {
+jumbo_source_set("vulkan_headers") {
   sources = [
     "src/include/vulkan/vk_icd.h",
     "src/include/vulkan/vk_layer.h",
