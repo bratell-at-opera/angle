@@ -4,6 +4,7 @@
 
 # import the use_x11 variable
 import("//build/config/linux/pkg_config.gni")
+import("//build/config/jumbo.gni")
 import("//build/config/ui.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("gni/angle.gni")
@@ -193,6 +194,10 @@ angle_source_set("includes") {
 
 angle_static_library("preprocessor") {
   sources = angle_preprocessor_sources
+  jumbo_excluded_sources = [
+    # Flex symbols collide
+    "src/compiler/preprocessor/ExpressionParser.cpp",
+  ]
 
   public_deps = [
     ":angle_common",
@@ -262,6 +267,10 @@ fuzzer_test("xxhash_fuzzer") {
 angle_static_library("angle_common") {
   sources = libangle_common_sources
 
+  jumbo_excluded_sources = [
+    # Using namespace
+    "src/common/uniform_type_info_autogen.cpp"
+  ]
   configs += [
     ":angle_common_config",
     ":debug_annotations_config",
@@ -376,6 +385,25 @@ angle_static_library("angle_gpu_info_util") {
 
 angle_static_library("translator") {
   sources = angle_translator_sources
+  jumbo_excluded_sources = [
+    # Symbols
+    "src/compiler/translator/tree_ops/NameEmbeddedUniformStructs.cpp",  # class Traverser
+    "src/compiler/translator/tree_ops/RewriteDfdy.cpp",  # class Traverser
+    "src/compiler/translator/tree_ops/RewriteStructSamplers.cpp",  # class Traverser
+    "src/compiler/translator/tree_ops/RewriteStructSamplersOld.cpp",  # class Traverser
+    "src/compiler/translator/tree_ops/RewriteTexelFetchOffset.cpp",  # class Traverser
+    "src/compiler/translator/tree_ops/RewriteUnaryMinusOperatorFloat.cpp",  # class Traverser
+    "src/compiler/translator/tree_ops/RewriteUnaryMinusOperatorInt.cpp",  # class Traverser
+    "src/compiler/translator/Symbol.cpp",  # kFunctionMangledNameSeparator
+    "src/compiler/translator/ValidateSwitch.cpp",  # kMaxAllowedTraversalDepth
+    "src/compiler/translator/ValidateVaryingLocations.cpp",
+    "src/compiler/translator/VariablePacker.cpp",
+
+    # Namespaces
+    "src/compiler/translator/blocklayout.cpp",
+    "src/compiler/translator/glslang_lex.cpp",
+    "src/compiler/translator/glslang_tab.cpp",
+  ]
   defines = []
 
   if (angle_enable_essl || use_fuzzing_engine) {
@@ -395,6 +423,9 @@ angle_static_library("translator") {
 
   if (angle_enable_vulkan || use_fuzzing_engine) {
     sources += angle_translator_lib_vulkan_sources
+    jumbo_excluded_sources += [
+      "src/compiler/translator/TranslatorVulkan.cpp",
+    ]
     defines += [ "ANGLE_ENABLE_VULKAN" ]
   }
 
@@ -628,9 +659,20 @@ angle_source_set("libANGLE_base") {
     sources += libangle_d3d11_blit_shaders
   }
 
+  jumbo_excluded_sources = []
+
   if (angle_enable_gl) {
     sources += libangle_gl_sources
     include_dirs += [ "src/third_party/khronos" ]
+
+    jumbo_excluded_sources += [
+      # Using namespace
+      "src/libANGLE/renderer/gl/VertexArrayGL.cpp",  # using namespace gl; (also too many symbols named "Format")
+      "src/libANGLE/renderer/gl/FramebufferGL.cpp",  # using namespace gl; (also too many symbols named "Format")
+
+      # Macros
+      "src/libANGLE/renderer/gl/FunctionsGL.cpp",  # ASSIGN
+    ]
 
     if (angle_enable_gl_null) {
       sources += libangle_gl_null_sources
@@ -645,6 +687,10 @@ angle_source_set("libANGLE_base") {
         "X11",
         "Xi",
         "Xext",
+      ]
+      jumbo_excluded_sources += [
+        # Symbols
+        "src/libANGLE/renderer/gl/glx/WindowSurfaceGLX.cpp",  # IgnoreX11Errors
       ]
     }
     if (is_mac) {
@@ -701,11 +747,47 @@ angle_source_set("libANGLE_base") {
     # Include generated shaders.
     import("src/libANGLE/renderer/vulkan/vk_internal_shaders_autogen.gni")
     sources += angle_vulkan_internal_shaders
+
+    jumbo_excluded_sources += [
+      # Using namespace
+      "src/libANGLE/renderer/vulkan/vk_format_table_autogen.cpp",  # using namespace gl; (also too many symbols named "Format")
+      "src/libANGLE/renderer/vulkan/vk_mandatory_format_support_table_autogen.cpp",  # using namespace angle;
+
+      "src/libANGLE/renderer/vulkan/RendererVk.cpp",  # kMaxFenceWaitTimeNs also in ContextVk.cpp
+
+      # Duplicate includes of .inl file
+      "src/libANGLE/renderer/vulkan/TextureVk.cpp",  # src/image_util/generatemip.inl
+
+      # Macros
+      "src/libANGLE/renderer/vulkan/VertexArrayVk.cpp",  # INIT redefined
+    ]
   }
 
   if (angle_enable_null) {
     sources += libangle_null_sources
   }
+
+  jumbo_excluded_sources += [
+    # Symbols
+    "src/libANGLE/Display.cpp",  # GenerateExtensionString
+    "src/libANGLE/validationES1.cpp",  # ValidateMatrixMode
+
+    # Using namespace
+    "src/libANGLE/Framebuffer.cpp",  # using namespace angle;
+    "src/libANGLE/formatutils.cpp",  # using namespace angle;
+    "src/libANGLE/renderer/load_functions_table_autogen.cpp",  # using namespace rx;
+    "src/libANGLE/validationES.cpp",  # using namespace angle;
+    "src/libANGLE/validationES3.cpp",  # using namespace angle;
+    "src/libANGLE/validationES31.cpp",  # using namespace angle;
+
+
+    # Missing include guards
+    "src/libANGLE/Overlay.cpp",  # Overlay_font_autogen.h included multiple times
+    "src/libANGLE/Overlay_autogen.cpp",  # Overlay_font_autogen.h included multiple times
+    "src/libANGLE/Overlay_font_autogen.cpp",  # Overlay_font_autogen.h included multiple times
+    "src/libANGLE/OverlayWidgets.cpp",  # Overlay_font_autogen.h included multiple times
+
+  ]
 
   if (is_mac) {
     sources += libangle_mac_sources

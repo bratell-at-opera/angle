@@ -7,7 +7,7 @@
 # https://github.com/KhronosGroup/Vulkan-ValidationLayers
 
 import("../../gni/angle.gni")
-
+import("//build/config/jumbo.gni")
 # Fuchsia has non-upstream changes to the vulkan layers, so we don't want
 # to build it from upstream sources.
 assert(!is_fuchsia)
@@ -431,7 +431,7 @@ if (!is_android) {
   }
 }
 
-source_set("vulkan_layer_utils") {
+jumbo_source_set("vulkan_layer_utils") {
   sources = [
     "src/layers/vk_format_utils.cpp",
     "src/layers/vk_format_utils.h",

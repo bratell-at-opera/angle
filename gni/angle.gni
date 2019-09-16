@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/dcheck_always_on.gni")
+import("//build/config/jumbo.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")  # import the use_x11 variable
 import("//build_overrides/angle.gni")
@@ -190,7 +191,7 @@ template("angle_shared_library") {
 }
 
 template("angle_source_set") {
-  source_set(target_name) {
+  jumbo_source_set(target_name) {
     forward_variables_from(invoker,
                            "*",
                            [
@@ -208,7 +209,7 @@ template("angle_source_set") {
 }
 
 template("angle_static_library") {
-  static_library(target_name) {
+  jumbo_static_library(target_name) {
     forward_variables_from(invoker,
                            "*",
                            [
